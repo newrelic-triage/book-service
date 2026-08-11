@@ -1,0 +1,26 @@
+name: Change Tracking Marker
+on:
+  release:
+    types:
+      - published
+jobs:
+  newrelic:
+    runs-on: ubuntu-latest
+    name: New Relic
+    steps:
+      - name: Set Release Version from Tag
+        run: echo "RELEASE_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+      - name: New Relic Application Deployment Marker
+        uses: newrelic/deployment-marker-action@v2.6.2
+        with:
+          commandType: changeTrackingCreateEvent
+          region: STAGING
+          apiKey: ${{ secrets.NEW_RELIC_API_KEY }}
+          entitySearch: id = 'MTIzNjIxNDB8QVBNfEFQUExJQ0FUSU9OfDM0MTEwMzYxOQ'
+          category: Deployment
+          type: BASIC
+          version: ${{ env.RELEASE_VERSION }}
+          user: ${{ github.actor }}
+          description: book-service
+          shortDescription: book-description
+          commit: ${{ github.sha }}
